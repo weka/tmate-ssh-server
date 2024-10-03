@@ -116,6 +116,7 @@ AC_CHECK_HEADERS(
 
 # Look for library needed for flock.
 AC_SEARCH_LIBS(flock, bsd)
+
 AC_SEARCH_LIBS(backtrace, execinfo)
 
 # Check for some functions that are replaced or omitted.
@@ -217,6 +218,21 @@ if test "x$found_msgpack" = xno; then
   AC_MSG_ERROR("msgpack >= 1.2.0 not found")
 fi
 
+
+# Look for tmate recording lib 
+PKG_CHECK_MODULES(
+	LIBNATS,
+	libnats >= 3.9.0, 
+	[
+       CPPFLAGS="$LIBNATS_CFLAGS $CPPFLAGS"
+       LIBS="$LIBNATS_LIBS $LIBS"
+       found_nats=yes
+    ], 
+	found_nats=no
+)
+if test "x$found_nats" = xno; then 
+	AC_MSG_ERROR("nats >= 3.9.0 is not found")
+fi 
 
 PKG_CHECK_MODULES(
   LIBSSH,

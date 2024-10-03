@@ -186,6 +186,7 @@ dist_tmate_ssh_server_SOURCES = \
 	tmate-main.c \
 	tmate-msgpack.c \
 	tmate-rand.c \
+	tmate-recording.c \
 	tmate-ssh-client-pty.c \
 	tmate-ssh-daemon.c \
 	tmate-ssh-exec.c \

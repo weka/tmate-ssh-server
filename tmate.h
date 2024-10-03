@@ -14,6 +14,7 @@ struct tmate_session;
 /* log.c */
 
 #define tmate_debug(...) log_emit(LOG_DEBUG, __VA_ARGS__)
+#define tmate_error(...) log_emit(LOG_ERROR, __VA_ARGS__)
 #define tmate_info(...)  log_emit(LOG_INFO,  __VA_ARGS__)
 #define tmate_fatal(...) fatalx( __VA_ARGS__)
 #define tmate_fatal_quiet(...)  ({tmate_debug(__VA_ARGS__); exit(1);})
@@ -205,6 +206,7 @@ struct tmate_settings {
 	const char *bind_addr;
 	int log_level;
 	bool use_proxy_protocol;
+	const char *nats_url;
 };
 extern struct tmate_settings *tmate_settings;
 
@@ -271,6 +273,11 @@ extern long tmate_get_random_long(void);
 extern void random_stream_init(struct random_stream *rs);
 extern char *random_stream_get(struct random_stream *rs, size_t count);
 extern void setup_ncurse(int fd, const char *name);
+
+/* tmate-recording.c */
+extern void tmate_init_recording(struct tmate_session *session);
+extern void tmate_send_record(struct tmate_session *session, const void *buf, int len);
+extern int  tmate_recording_fd(void);
 
 /* tmate-websocket.c */
 
