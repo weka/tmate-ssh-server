@@ -35,6 +35,7 @@ struct tmate_settings _tmate_settings = {
 	.use_proxy_protocol	= false,
 	.authorized_keys_only	= false,
 	.nats_url = NULL,
+	.nats_topic = TMATE_NATS_DEFAULT_TOPIC,
 };
 
 struct tmate_settings *tmate_settings = &_tmate_settings;
@@ -51,7 +52,7 @@ void request_server_termination(void)
 
 static void usage(void)
 {
-	fprintf(stderr, "usage: tmate-ssh-server [-A] [-b ip] [-h hostname] [-k keys_dir] [-p listen_port] [-q ssh_port_advertized] [-w websocket_hostname] [-z websocket_port] [-r nats_url] [-x] [-v]\n");
+	fprintf(stderr, "usage: tmate-ssh-server [-A] [-b ip] [-h hostname] [-k keys_dir] [-p listen_port] [-q ssh_port_advertized] [-w websocket_hostname] [-z websocket_port] [-r nats_recording_url] [-t nats_topic] [-x] [-v]\n");
 }
 
 static char* get_full_hostname(void)
@@ -122,7 +123,7 @@ int main(int argc, char **argv, char **envp)
 {
 	int opt;
 
-	while ((opt = getopt(argc, argv, "Ab:h:k:p:q:w:z:r:xv")) != -1) {
+	while ((opt = getopt(argc, argv, "Ab:h:k:p:q:w:z:r:t:xv")) != -1) {
 		switch (opt) {
 		case 'A':
 			tmate_settings->authorized_keys_only = true;
@@ -150,6 +151,9 @@ int main(int argc, char **argv, char **envp)
 			break;
 		case 'r':
 			tmate_settings->nats_url = xstrdup(optarg);
+			break;
+		case 't':
+			tmate_settings->nats_topic = xstrdup(optarg);
 			break;
 		case 'x':
 			tmate_settings->use_proxy_protocol = true;

@@ -188,6 +188,9 @@ extern void tmate_ssh_server_main(struct tmate_session *session,
 
 #define TMATE_SSH_DEFAULT_KEYS_DIR "keys"
 
+#define TMATE_NATS_DEFAULT_TOPIC "ingest.tmate.recording"
+#define TMATE_NATS_RETRIES 10
+
 #define TMATE_DEFAULT_WEBSOCKET_PORT 4002
 
 #define TMATE_TOKEN_LEN 25
@@ -207,6 +210,7 @@ struct tmate_settings {
 	int log_level;
 	bool use_proxy_protocol;
 	const char *nats_url;
+	const char *nats_topic;
 };
 extern struct tmate_settings *tmate_settings;
 
@@ -237,12 +241,13 @@ struct tmate_session {
 	struct tmate_decoder websocket_decoder;
 	u_int websocket_sx, websocket_sy;
 	on_websocket_error_cb *on_websocket_error;
+	int recording_pipe[2];
 
 	/* only for role client-pty */
 	int pty;
 	struct event ev_pty;
 	bool readonly;
-
+	
 	/* only for role-exec */
 	bool response_received;
 	bool response_status;
@@ -275,9 +280,9 @@ extern char *random_stream_get(struct random_stream *rs, size_t count);
 extern void setup_ncurse(int fd, const char *name);
 
 /* tmate-recording.c */
-extern void tmate_init_recording(struct tmate_session *session);
-extern void tmate_send_record(struct tmate_session *session, const void *buf, int len);
-extern int  tmate_recording_fd(void);
+extern void tmate_recording_init(struct tmate_session *session);
+extern void tmate_recording_send(struct tmate_session *session, const void *buf, int len);
+extern void tmate_recording_close(struct tmate_session *session);
 
 /* tmate-websocket.c */
 

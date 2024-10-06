@@ -14,7 +14,6 @@ RUN apk add --no-cache \
 	libssh-dev \
 	linux-headers \
 	make \
-	patch \
 	msgpack-c \
 	msgpack-c-dev \
 	ncurses-dev \
@@ -28,12 +27,9 @@ FROM deps AS nats_build
 
 RUN git clone https://github.com/nats-io/nats.c.git /src/cnats;
 
-COPY ./nats-recording.patch /src/cnats 
-
 RUN set -ex; \ 
 	cd /src/cnats; \
 	git checkout v3.9.0; \
-	patch -p0 -i nats-recording.patch; \
 	mkdir build; \
 	cd build; \
 	cmake .. -DNATS_BUILD_STREAMING=OFF -DNATS_BUILD_EXAMPLES=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=/usr; \
@@ -43,11 +39,6 @@ FROM nats_build AS build
 
 WORKDIR /src/tmate-ssh-server
 COPY . /src/tmate-ssh-server
-
-# RUN set -ex; \ 
-# 	cd /src/tmate-ssh-server/recording; \
-# 	go build -v -o libtmaterecording.so -buildmode=c-shared .; \
-# 	cp libtmaterecording.so /usr/lib
 
 RUN set -ex; \
 	./autogen.sh; \

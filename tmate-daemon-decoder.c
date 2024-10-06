@@ -239,7 +239,7 @@ static void tmate_pty_data(struct tmate_session *session,
 	if (!wp)
 		tmate_fatal("can't find pane id=%d (pty_data)", id);
 
-	tmate_send_record(session, (const void *) buf, (int) len);
+	tmate_recording_send(session, (const void *) buf, (int) len);
 
 	evbuffer_add(wp->event_input, buf, len);
 	input_parse(wp);
