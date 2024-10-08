@@ -79,9 +79,11 @@ static void tmate_daemon_init(struct tmate_session *session)
 	client->channel_cb.channel_data_function = on_ssh_channel_read,
 	ssh_set_channel_callbacks(client->channel, &client->channel_cb);
 
+	tmate_recording_init(session);
+	
 	tmate_encoder_init(&session->daemon_encoder, on_daemon_encoder_write, session);
 	tmate_decoder_init(&session->daemon_decoder, on_daemon_decoder_read, session);
-
+	
 	tmate_init_websocket(session, NULL);
 }
 
@@ -171,16 +173,18 @@ void tmate_spawn_daemon(struct tmate_session *session)
 	setup_ncurse(STDOUT_FILENO, "screen-256color");
 
 	tmate_daemon_init(session);
-
+	
 	close_fds_except((int[]){session->tmux_socket_fd,
 				 ssh_get_fd(session->ssh_client.session),
 				 log_file ? fileno(log_file) : -1,
-				 session->websocket_fd}, 4);
+				 session->recording_pipe[1], // recording write
+				 session->websocket_fd}, 6);
 
 	get_in_jail();
 	event_reinit(session->ev_base);
 
 	tmux_server_init();
+	
 	signal(SIGTERM, handle_sigterm);
 	server_start(session->ev_base, -1, NULL);
 	/* never reached */

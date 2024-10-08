@@ -224,7 +224,7 @@ static void tmate_sync_layout(__unused struct tmate_session *session,
 	tmate_sync_windows(s, uk);
 }
 
-static void tmate_pty_data(__unused struct tmate_session *session,
+static void tmate_pty_data(struct tmate_session *session,
 			   struct tmate_unpacker *uk)
 {
 	struct window_pane *wp;
@@ -238,6 +238,8 @@ static void tmate_pty_data(__unused struct tmate_session *session,
 	wp = window_pane_find_by_id(id);
 	if (!wp)
 		tmate_fatal("can't find pane id=%d (pty_data)", id);
+
+	tmate_recording_send(session, (const void *) buf, (int) len);
 
 	evbuffer_add(wp->event_input, buf, len);
 	input_parse(wp);

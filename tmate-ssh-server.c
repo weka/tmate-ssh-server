@@ -469,6 +469,9 @@ void tmate_ssh_server_main(struct tmate_session *session, const char *keys_dir,
 	client->winsize_pty.ws_col = 80;
 	client->winsize_pty.ws_row = 24;
 	session->session_token = "init";
+	
+	session->recording_pipe[0] = -1;
+	session->recording_pipe[1] = -1;
 
 	if (!client->session)
 		tmate_fatal("Cannot initialize session");

@@ -207,7 +207,7 @@ session_destroy(struct session *s)
 	struct winlink	*wl;
 
 	log_debug("session %s destroyed", s->name);
-
+	
 	RB_REMOVE(sessions, &sessions, s);
 	notify_session_closed(s);
 
@@ -217,7 +217,7 @@ session_destroy(struct session *s)
 		event_del(&s->lock_timer);
 
 	session_group_remove(s);
-
+	
 	while (!TAILQ_EMPTY(&s->lastw))
 		winlink_stack_remove(&s->lastw, TAILQ_FIRST(&s->lastw));
 	while (!RB_EMPTY(&s->windows)) {
@@ -228,6 +228,8 @@ session_destroy(struct session *s)
 
 	free((void *)s->cwd);
 
+	tmate_recording_close(tmate_session);
+	
 	session_unref(s);
 }
 
